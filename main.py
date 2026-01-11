@@ -1,5 +1,8 @@
 import cv2
 import os
+import time
+
+
 
 def read_files(directory_name = "media_files", all_file_type = False, file_type="mp4"):
     all_files_path = []
@@ -27,4 +30,31 @@ def read_files(directory_name = "media_files", all_file_type = False, file_type=
 
 
 
-print(read_files())
+
+
+def video_player(video_file_path):
+    capture = cv2.VideoCapture(video_file_path)
+    
+    time_start = time.time() 
+    fps = capture.get(cv2.CAP_PROP_FPS)
+    if fps <=0:
+        fps = 30
+    frame_duration = 1/fps
+    frame_count = 0
+
+    while True:
+        ret, frame = capture.read()
+        if ret:
+            time_expected = time_start + (frame_duration * frame_count)
+            time_current = time.time()
+            if time_expected > time_current:
+                time.sleep(time_expected-time_current)
+            cv2.imshow("original",frame)
+            if cv2.waitKey(1) & 0xFF==ord("q"):
+                cv2.destroyAllWindows()
+            frame_count+=1
+
+        else:
+            time_end = time.time()
+            break
+    print(f"total time : {time_end-time_start}")
