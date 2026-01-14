@@ -1,3 +1,6 @@
 *env
 media_files/*
 !media_files/.gitkeep
+runner.py
+*pyc
+__pycache__/
