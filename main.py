@@ -1,6 +1,7 @@
 import cv2
 import os
 import time
+import imutils
 
 
 
@@ -30,18 +31,11 @@ def read_files(directory_name = "media_files", all_file_type = False, file_type=
 
 
 
-def frame_resizer(frame, max_height=500, *max_width):
-    
-    height, width, _ = frame.shape
-    aspect_ratio = width/height
-    
+def frame_resizer(frame, max_height=500, max_width=None):
     if max_width:
-        new_width = max_width
-        new_height = int(new_width/aspect_ratio)
-    elif max_height:
-        new_height = max_height
-        new_width = int(aspect_ratio*new_height)
-    resized_frame = cv2.resize(frame, (new_width, new_height))
+        resized_frame = imutils.resize(frame, width=max_width)
+    else:
+        resized_frame = imutils.resize(frame, height=max_height)
 
     return resized_frame
 
