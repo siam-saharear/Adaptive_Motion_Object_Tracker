@@ -30,6 +30,23 @@ def read_files(directory_name = "media_files", all_file_type = False, file_type=
 
 
 
+def frame_resizer(frame, max_height=500, *max_width):
+    
+    height, width, _ = frame.shape
+    aspect_ratio = width/height
+    
+    if max_width:
+        new_width = max_width
+        new_height = int(new_width/aspect_ratio)
+    elif max_height:
+        new_height = max_height
+        new_width = int(aspect_ratio*new_height)
+    resized_frame = cv2.resize(frame, (new_width, new_height))
+
+    return resized_frame
+
+
+
 
 
 def video_player(video_file_path):
