@@ -62,10 +62,11 @@ def video_player(video_file_path):
                 time.sleep(time_expected-time_current)
             cv2.imshow("original",frame)
             if cv2.waitKey(1) & 0xFF==ord("q"):
-                cv2.destroyAllWindows()
+                break
             frame_count+=1
 
         else:
             time_end = time.time()
             break
+    cv2.destroyAllWindows()
     print(f"total time : {time_end-time_start}")
