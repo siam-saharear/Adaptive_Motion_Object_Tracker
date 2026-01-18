@@ -61,6 +61,25 @@ def frame_contour(frame, background_subtractor):
     return contour
 
 
+
+
+def draw_contour(frame, contour):
+    marked_frame = frame.copy()
+
+    lil_contour = 0
+    big_contour = 0
+
+    for cnt in contour:
+        if cv2.contourArea(cnt) >= 100:
+            cv2.drawContours(marked_frame, cnt, -1, (0,255,0), 2)
+            big_contour += 1
+        else:
+            lil_contour += 1
+    print(f"lil : {lil_contour}\nbig : {big_contour}")
+
+    return marked_frame
+    
+
     
 
 def video_player(video_file_path):
@@ -86,6 +105,9 @@ def video_player(video_file_path):
             frame_resized = frame_resizer(frame)
             contour = frame_contour(frame_resized, background_subtractor)
 
+            frame_contoured = draw_contour(frame_resized, contour)
+
+            cv2.imshow("contour",frame_contoured)
             cv2.imshow("original",frame_resized)
         
             if cv2.waitKey(1) & 0xFF==ord("q"):
