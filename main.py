@@ -44,6 +44,25 @@ def frame_resizer(frame, max_height=500, max_width=None):
 
 
 
+def frame_contour(frame, background_subtractor):
+    frame_gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    frame_blur = cv2.GaussianBlur(frame_gray, (3,3), 0)
+
+    foreground_mask = background_subtractor.apply(frame_blur)
+
+    _, motion_mask_threshold = cv2.threshold(foreground_mask, 200, 255, cv2.THRESH_BINARY)
+
+    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3,3))
+    motion_mask_morphology_open = cv2.morphologyEx(motion_mask_threshold, cv2.MORPH_OPEN, kernel, iterations=2)
+    motion_mask_morphology_close = cv2.morphologyEx(motion_mask_morphology_open , cv2.MORPH_CLOSE, kernel, iterations=2)
+
+    contour, _ = cv2.findContours(motion_mask_morphology_close, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
+    
+    return contour
+
+
+    
+
 def video_player(video_file_path):
     capture = cv2.VideoCapture(video_file_path)
     
@@ -54,6 +73,8 @@ def video_player(video_file_path):
     frame_duration = 1/fps
     frame_count = 0
 
+    background_subtractor = cv2.createBackgroundSubtractorKNN(history=200, detectShadows=True)
+
     while True:
         ret, frame = capture.read()
         if ret:
@@ -61,7 +82,12 @@ def video_player(video_file_path):
             time_current = time.time()
             if time_expected > time_current:
                 time.sleep(time_expected-time_current)
-            cv2.imshow("original",frame)
+        
+            frame_resized = frame_resizer(frame)
+            contour = frame_contour(frame_resized, background_subtractor)
+
+            cv2.imshow("original",frame_resized)
+        
             if cv2.waitKey(1) & 0xFF==ord("q"):
                 break
             frame_count+=1
@@ -70,4 +96,5 @@ def video_player(video_file_path):
             time_end = time.time()
             break
     cv2.destroyAllWindows()
+
     print(f"total time : {time_end-time_start}")
