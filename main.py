@@ -5,6 +5,7 @@ import imutils
 
 
 
+
 def read_files(directory_name = "media_files", all_file_type = False, file_type="mp4"):
     all_files_path = []
     current_path = os.getcwd()
@@ -31,6 +32,7 @@ def read_files(directory_name = "media_files", all_file_type = False, file_type=
 
 
 
+
 def frame_resizer(frame, max_height=500, max_width=None):
     if max_width:
         resized_frame = imutils.resize(frame, width=max_width)
@@ -38,7 +40,6 @@ def frame_resizer(frame, max_height=500, max_width=None):
         resized_frame = imutils.resize(frame, height=max_height)
 
     return resized_frame
-
 
 
 
