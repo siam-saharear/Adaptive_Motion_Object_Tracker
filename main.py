@@ -81,6 +81,17 @@ def draw_contour(frame, contour):
     
 
     
+def centroid(cnt):
+    moments = cv2.moments(cnt)
+    if moments["m00"] == 0:
+        return None
+    center_x = int(moments["m10"]/moments["m00"])
+    center_y = int(moments["m01"]/moments["m00"])
+
+    return center_x, center_y   
+
+
+
 
 def video_player(video_file_path):
     capture = cv2.VideoCapture(video_file_path)
