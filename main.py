@@ -93,6 +93,42 @@ def centroid(cnt):
 
 
 
+def filter_short_lived_contour(detected_contour, previous_states, min_frames=5, max_distance=50):
+    current_states = {}
+
+    for cnt in detected_contour:
+        if cv2.contourArea(cnt) < 100:
+            continue
+
+        center = centroid(cnt)
+        if center == None:
+            continue
+
+        matched_id = None
+        for contour_id, state in previous_states.items():
+            previous_x, previous_y = state["center"]
+
+            if (abs(center[0]-previous_x) <= max_distance) and (abs(center[1]-previous_y) <= max_distance):
+                matched_id = contour_id
+        
+        if matched_id == None:
+            new_id = len(previous_states) + len(current_states) + 1
+            current_states[new_id] = {"center" : center,
+                                      "life" : 1,
+                                      "contour" : cnt
+                                      }
+
+        else:
+            current_states[matched_id] = {"center" : center,
+                                          "life": previous_states[matched_id]["life"] + 1,
+                                          "contour": cnt}
+    stable_contours = [state["contour"] for state in current_states.values() if state["life"] >= min_frames]
+
+    return stable_contours, current_states
+
+
+
+
 def video_player(video_file_path):
     capture = cv2.VideoCapture(video_file_path)
     
